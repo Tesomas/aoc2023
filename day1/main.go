@@ -14,20 +14,42 @@ func main() {
 	lines := getInputLines()
 	var num = 0
 	for _, line := range *lines {
-		newNum, _ := findDigitsForLine(line)
+		newNum, err := findDigitsForLine(line)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(newNum)
 		num += newNum
 	}
-	fmt.Print(num)
+	fmt.Println(num)
 
 }
 
 func findDigitsForLine(line string) (int, error) {
+	line = replaceSpelledOutDigits(line)
 	r, _ := regexp.Compile("[0-9]")
 	firstMatch := r.Find([]byte(line))
 	reversedString := reverseString(line)
 	secondMatch := r.Find([]byte(reversedString))
 	return strconv.Atoi(string(append(firstMatch, secondMatch...)))
+}
 
+func replaceSingleDigit(line string, matchString string, replacementString string) string {
+	regex, _ := regexp.Compile(matchString)
+	return regex.ReplaceAllString(line, replacementString)
+}
+
+func replaceSpelledOutDigits(line string) string {
+	line = replaceSingleDigit(line, "one", "on1e")
+	line = replaceSingleDigit(line, "two", "tw2o")
+	line = replaceSingleDigit(line, "three", "thr3ee")
+	line = replaceSingleDigit(line, "four", "fo4ur")
+	line = replaceSingleDigit(line, "five", "fi5ve")
+	line = replaceSingleDigit(line, "six", "si6x")
+	line = replaceSingleDigit(line, "seven", "sev7en")
+	line = replaceSingleDigit(line, "eight", "ei8ght")
+	line = replaceSingleDigit(line, "nine", "ni9ne")
+	return line
 }
 
 func reverseString(s string) string {
