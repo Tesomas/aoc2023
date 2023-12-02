@@ -9,25 +9,28 @@ import (
 )
 
 func main() {
-	validGameSum := 0
+	gamePowerSum := 0
 	lines := common.GetInputLines("/home/rbruenin/workspace/aoc2023/day2/input.txt")
 	games := parseGames(lines)
 
 	for _, game := range games {
-		invalidGame := false
+		maxRed := 0
+		maxBlue := 0
+		maxGreen := 0
 		for _, round := range game.Rounds {
-			if round.Red > 12 || round.Blue > 14 || round.Green > 13 {
-				invalidGame = true
-				fmt.Println(game)
+			if round.Red > maxRed {
+				maxRed = round.Red
+			}
+			if round.Blue > maxBlue {
+				maxBlue = round.Blue
+			}
+			if round.Green > maxGreen {
+				maxGreen = round.Green
 			}
 		}
-		if !invalidGame {
-			validGameSum += game.Id
-		}
-
+		gamePowerSum += maxRed * maxBlue * maxGreen
 	}
-
-	fmt.Println(validGameSum)
+	fmt.Println(gamePowerSum)
 }
 
 func parseGames(lines *[]string) []Game {
@@ -56,7 +59,6 @@ func getGameID(gameIDString string) int {
 }
 
 func getRoundFromString(round string) Round {
-	fmt.Println(round)
 	parsedRound := Round{}
 	red := regexp.MustCompile(`(?P<redCount>\d+) red`)
 	blue := regexp.MustCompile(`(?P<blueCount>\d+) blue`)
@@ -64,7 +66,6 @@ func getRoundFromString(round string) Round {
 	redMatch := red.FindStringSubmatch(round)
 	blueMatch := blue.FindStringSubmatch(round)
 	greenMatch := green.FindStringSubmatch(round)
-	fmt.Println(redMatch)
 	index := red.SubexpIndex("redCount")
 	if redMatch != nil {
 		parsedRound.Red, _ = strconv.Atoi(redMatch[index])
